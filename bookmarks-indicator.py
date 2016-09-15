@@ -73,6 +73,8 @@ class BookmarksIndicator:
                 self.append_separator(self.menu, folder[3:].strip())
             elif os.path.isdir(folder):
                 self.append_item(self.menu, folder)
+            elif os.path.isfile(folder):
+                self.append_item(self.menu, folder)
             elif folder.startswith('sftp|'):
                 sftp = folder.split('|')
                 name = sftp[1]
@@ -81,7 +83,7 @@ class BookmarksIndicator:
                 mountpoint = self.mount_sftp(location, name, port)
                 self.append_item(self.menu, mountpoint)
             else:
-                raise Exception("'%s' is not a folder" % folder)
+                raise Exception("'%s' is not a folder or a file" % folder)
 
     def append_base_items(self):
         '''
