@@ -75,7 +75,10 @@ class BookmarksIndicator:
                 self.append_item(self.menu, folder)
             elif folder.startswith('sftp|'):
                 sftp = folder.split('|')
-                mountpoint = self.mount_sftp(name=sftp[1], location=sftp[2])
+                name = sftp[1]
+                location = sftp[2]
+                port = sftp[3] if 3 in sftp else None
+                mountpoint = self.mount_sftp(location, name, port)
                 self.append_item(self.menu, mountpoint)
             else:
                 raise Exception("'%s' is not a folder" % folder)
@@ -106,11 +109,14 @@ class BookmarksIndicator:
             sep_title.show()
             widget.append(sep_title)
 
-    def mount_sftp(self, location, name):
+    def mount_sftp(self, location, name, port=None):
         home = os.path.expandvars("$HOME")
         mountpoint = "%s/.bookmarks-indicator-sftp/%s" % (home, name)
         p = subprocess.call(['mkdir', '-p', mountpoint])
-        p = subprocess.call(['sshfs', location, mountpoint])
+        if port == None:
+            p = subprocess.call(['sshfs', location, mountpoint])
+        else:
+            p = subprocess.call(['sshfs', location, mountpoint, '-p', port])
         return mountpoint
 
     def append_item(self, parent, path):
